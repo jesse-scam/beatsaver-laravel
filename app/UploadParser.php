@@ -56,27 +56,34 @@ class UploadParser
 
     /**
      * @param bool $noCache
+     * @param string $gameType
      *
      * @return array
      * @throws UploadParserException
      */
-    public function getSongData($noCache = false)
+    public function getSongData($noCache = false, $gameType = 'beatsaber')
     {
         if ($noCache || empty($this->songData)) {
             Log::debug('force parse song data');
-            $this->songData = $this->parseSong();
+            if ($gameType == 'beatsaber') {
+                $this->songData = $this->parseSongFromBeatSaber();
+            } else if ($gameType == 'chopit') {
+                $this->songData = $this->parseSongFromChopIt();
+            } else {
+                // XXX: Throw some exception
+            }
         }
 
         return $this->songData;
     }
 
     /**
-     * Parse the zip file for song metadata.
+     * Parse the zip file for song metadata for Beat Saber
      *
      * @return array
      * @throws UploadParserException
      */
-    protected function parseSong()
+    protected function parseSongFromBeatSaber()
     {
         $songData = [];
 
@@ -140,6 +147,53 @@ class UploadParser
                 // without hashes the parsing failed
                 throw new UploadParserException('Song hash could not be calculated!');
             }
+        }
+
+        return $songData;
+    }
+
+    /**
+     * Parse the zip file for song metadata for Chop It
+     *
+     * @return array
+     * @throws UploadParserException
+     */
+    protected function parseSongFromChopIt()
+    {
+        $songData = [];
+
+        $info = $this->readFromZip('SongInfo.json');
+        // workaround for info.json files with non UTF8 encoded characters
+        // remove BOM
+        $info = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $info);
+        $info = json_decode($info, true);
+
+        if ($info) {
+            Log::debug('found info.json');
+
+            $songData['songName'] = trim($info['songName']);
+            // artistName
+            $songData['songSubName'] = trim($info['artistName']);
+
+            // unsupported fields
+            $songData['authorName'] = '';
+            $songData['beatsPerMinute'] = 0;
+            $songData['difficultyLevels'] = [];
+            $songData['difficultyLevels'] = [
+                'Expert' => [
+                    'stats' => [
+                        'events' => 'No'
+                    ]
+                ]
+            ];
+            $songData['hashMD5'] = '';
+            $songData['hashSHA1'] = '';
+            $songData['coverType'] = '';
+            $songData['coverData'] = '';
+            $hashBase = '';
+
+	    // XXX: Beatmaps not restricted by difficulty tag, so pull all available beatmap files
+	    // XXX: Will need to pull in beatmaps and hash
         }
 
         return $songData;
@@ -232,7 +286,7 @@ class UploadParser
             return $index;
         }
 
-        throw new UploadParserException('Cannot create index. Zipfile not open');
+        throw new UploadParserException('Cannot create index. Zip file not open');
     }
 
     /**

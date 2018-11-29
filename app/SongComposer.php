@@ -80,7 +80,7 @@ class SongComposer implements ComposerContract
         if (!empty($file)) {
             try {
                 $parser = new UploadParser($file);
-                $songData = $parser->getSongData();
+                $songData = $parser->getSongData(false, $metadata['gameType']);
             } catch (Exceptions\UploadParserException $e) {
                 Log::error($e->getMessage());
                 return ['status' => static::ERROR_INVALID_FORMAT];

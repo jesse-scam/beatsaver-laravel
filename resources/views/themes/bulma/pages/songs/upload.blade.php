@@ -26,6 +26,11 @@
                         </label>
                     </div>
                 </div>
+                <label class="label" style="margin: 10px 0; display: inline;">Game</label>
+                <select id="GameType" name="gameType">
+                    <option value="beatsaber">Beat Saber</option>
+                    <option value="chopit">Chop It</option>
+                </select>
 
                 <h5 class="has-text-grey">Must meet the following upload rules</h5>
                 <ul>

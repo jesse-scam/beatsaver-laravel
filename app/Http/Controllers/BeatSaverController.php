@@ -170,6 +170,7 @@ class BeatSaverController extends Controller
             'songId'      => null,
             'name'        => $request->input('name'),
             'description' => $request->input('description'),
+            'gameType'    => $request->input('gameType'),
         ];
 
         $song = $composer->create($metadata, $process);
