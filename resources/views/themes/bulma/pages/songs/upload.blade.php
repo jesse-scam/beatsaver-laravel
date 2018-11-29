@@ -37,6 +37,11 @@
                         </label>
                     </div>
                 </div>
+                <label class="label" style="margin: 10px 0; display: inline;">Game</label>
+                <select id="GameType" name="gameType">
+                    <option value="beatsaber">Beat Saber</option>
+                    <option value="chopit">Chop It</option>
+                </select>
 
                 <script>
                     var inp = document.getElementById('InputFile')
