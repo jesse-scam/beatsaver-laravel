@@ -80,7 +80,7 @@ class SongComposer implements ComposerContract
         if (!empty($file)) {
             try {
                 $parser = new UploadParser($file);
-                $songData = $parser->getSongData(false, $metadata['gameType']);
+                $songData = $parser->getSongData();
             } catch (Exceptions\UploadParserException $e) {
                 Log::error($e->getMessage());
                 return ['status' => static::ERROR_INVALID_FORMAT, 'statusText' => $e->getMessage()];
@@ -133,11 +133,10 @@ class SongComposer implements ComposerContract
         // create song data entry
         $songDetails = new SongDetail([
             'song_name'         => $songData['songName'],
-            'song_sub_name'     => $songData['songSubName'],
+            'artist_name'       => $songData['artistName'],
             'author_name'       => $songData['authorName'],
             'cover'             => $songData['coverType'],
-            'bpm'               => $songData['beatsPerMinute'],
-            'difficulty_levels' => json_encode($songData['difficultyLevels']),
+            'beatmaps' => json_encode($songData['beatmaps']),
             'hash_md5'          => $songData['hashMD5'],
             'hash_sha1'         => $songData['hashSHA1'],
         ]);
@@ -368,7 +367,6 @@ class SongComposer implements ComposerContract
             'uploader'    => $song->uploader->name,
             'uploaderId'  => $song->uploader->id,
             'version'     => [
-
             ],
             'createdAt'   => $song->created_at,
         ];
@@ -384,10 +382,9 @@ class SongComposer implements ComposerContract
 
             $songData['version'][$song->id . '-' . $detail->id] = [
                 'songName'       => $detail->song_name,
-                'songSubName'    => $detail->song_sub_name,
+                'artistName'     => $detail->artist_name,
                 'authorName'     => $detail->author_name,
-                'bpm'            => $detail->bpm,
-                'difficulties'   => json_decode($detail->difficulty_levels, true) ?? [],
+                'beatmaps'       => json_decode($detail->beatmaps, true) ?? [],
                 'downloadCount'  => $detail->download_count,
                 'playedCount'    => $detail->play_count,
                 'upVotes'        => $detail->upVotes,

@@ -56,62 +56,46 @@ class UploadParser
 
     /**
      * @param bool $noCache
-     * @param string $gameType
      *
      * @return array
      * @throws UploadParserException
      */
-    public function getSongData($noCache = false, $gameType = 'beatsaber')
+    public function getSongData($noCache = false)
     {
         if ($noCache || empty($this->songData)) {
             Log::debug('force parse song data');
-            if ($gameType == 'beatsaber') {
-                $this->songData = $this->parseSongFromBeatSaber();
-            } else if ($gameType == 'chopit') {
-                $this->songData = $this->parseSongFromChopIt();
-            } else {
-                // XXX: Throw some exception
-            }
+            $this->songData = $this->parseSongFromChopIt();
         }
 
         return $this->songData;
     }
 
     /**
-     * Parse the zip file for song metadata for Beat Saber
+     * Parse the zip file for song metadata for Chop It
      *
      * @return array
      * @throws UploadParserException
      */
-    protected function parseSongFromBeatSaber()
+    protected function parseSongFromChopIt()
     {
         $songData = [];
 
-        $info = $this->readFromZip('info.json');
+        $info = $this->readFromZip('SongInfo.json');
         // workaround for info.json files with non UTF8 encoded characters
         // remove BOM
         $info = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $info);
         $info = json_decode($info, true);
 
         if ($info) {
-            Log::debug('found info.json');
+            Log::debug('found SongInfo.json');
 
             $songData['songName'] = trim($info['songName']);
-            $songData['songSubName'] = trim(($info['songSubName'] ?? ''));
-            $songData['authorName'] = trim($info['authorName']);
-            $songData['beatsPerMinute'] = $info['beatsPerMinute'] > 0 ? $info['beatsPerMinute'] : 0;
-            $songData['difficultyLevels'] = [];
-            $songData['hashMD5'] = null;
-            $songData['hashSHA1'] = null;
+            $songData['artistName'] = trim($info['artistName']);
 
-            $songData['coverType'] = null;
-            $songData['coverData'] = null;
-            if ($this->zipHasFile($info['coverImagePath'])) {
-                $songData['coverType'] = pathinfo($info['coverImagePath'], PATHINFO_EXTENSION);
-                $songData['coverData'] = base64_encode($this->readFromZip($info['coverImagePath']));
-            } else {
-                throw new UploadParserException('Cannot find cover image ' . $info['coverImagePath'] . '!');
-            }
+            // XXX: What to do for author name?
+            $songData['authorName'] = 'test';
+
+            $songData['beatmaps'] = $this->findFilenamesInZip('beatmap');
 
             $cover = $this->readFromZip($info['coverImagePath']);
             list($width, $height, $type, $attr) = getimagesizefromstring($cover);
@@ -145,30 +129,20 @@ class UploadParser
             }
 
             $hashBase = '';
-            foreach ($info['difficultyLevels'] as $difficultyLevel) {
+            foreach ($songData['beatmaps'] as $beatmap) {
+                $hashBase .= $this->zipFile->getFromName($beatmap);
+            }
 
-                if ($this->zipHasFile($difficultyLevel['audioPath']) && $this->zipHasFile($difficultyLevel['jsonPath'])) {
-                    $songData['difficultyLevels'][$difficultyLevel['difficulty']] = [
-                        'difficulty' => $difficultyLevel['difficulty'],
-                        'rank'       => $difficultyLevel['difficultyRank'],
-                        'audioPath'  => $difficultyLevel['audioPath'],
-                        'jsonPath'   => $difficultyLevel['jsonPath'],
-                        'stats'      => [],
-                    ];
-
-                    $difficultyDataRaw = $this->readFromZip($difficultyLevel['jsonPath']);
-                    if ($difficultyDataRaw) {
-                        // add raw data to hashBase
-                        $hashBase .= $difficultyDataRaw;
-
-                        $songData['difficultyLevels'][$difficultyLevel['difficulty']]['stats'] = $this->analyzeDifficulty($difficultyDataRaw);
-                    }
-                } else {
-                    Log::debug('error parsing difficulty level: ' . $difficultyLevel['difficulty']);
-                    Log::debug('audio file "' . $difficultyLevel['audioPath'] . '": ' . $this->zipHasFile($difficultyLevel['audioPath']));
-                    Log::debug('json file "' . $difficultyLevel['jsonPath'] . '": ' . $this->zipHasFile($difficultyLevel['jsonPath']));
-
-                }
+            if ($this->zipHasFile('cover.png')) {
+                $songData['coverType'] = 'png';
+                $songData['coverData'] = base64_encode($this->readFromZip('cover.png'));
+            } else if ($this->zipHasFile('cover.jpg')) {
+                $songData['coverType'] = 'jpg';
+                $songData['coverData'] = base64_encode($this->readFromZip('cover.jpg'));
+            } else {
+                // XXX: Cover images not required for Chop It.  Use default logo.
+                $songData['coverType'] = '';
+                $songData['coverData'] = '';
             }
 
             if ($hashBase) {
@@ -178,53 +152,6 @@ class UploadParser
                 // without hashes the parsing failed
                 throw new UploadParserException('Song hash could not be calculated!');
             }
-        }
-
-        return $songData;
-    }
-
-    /**
-     * Parse the zip file for song metadata for Chop It
-     *
-     * @return array
-     * @throws UploadParserException
-     */
-    protected function parseSongFromChopIt()
-    {
-        $songData = [];
-
-        $info = $this->readFromZip('SongInfo.json');
-        // workaround for info.json files with non UTF8 encoded characters
-        // remove BOM
-        $info = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $info);
-        $info = json_decode($info, true);
-
-        if ($info) {
-            Log::debug('found info.json');
-
-            $songData['songName'] = trim($info['songName']);
-            // artistName
-            $songData['songSubName'] = trim($info['artistName']);
-
-            // unsupported fields
-            $songData['authorName'] = '';
-            $songData['beatsPerMinute'] = 0;
-            $songData['difficultyLevels'] = [];
-            $songData['difficultyLevels'] = [
-                'Expert' => [
-                    'stats' => [
-                        'events' => 'No'
-                    ]
-                ]
-            ];
-            $songData['hashMD5'] = '';
-            $songData['hashSHA1'] = '';
-            $songData['coverType'] = '';
-            $songData['coverData'] = '';
-            $hashBase = '';
-
-	    // XXX: Beatmaps not restricted by difficulty tag, so pull all available beatmap files
-	    // XXX: Will need to pull in beatmaps and hash
         }
 
         return $songData;
@@ -319,6 +246,29 @@ class UploadParser
 
         throw new UploadParserException('Cannot create index. Zip file not open');
     }
+
+    /**
+     * Return file names that match search string.
+     *
+     * @param $searchString
+     * @return array
+     */
+    protected function findFilenamesInZip(string $searchString): array
+    {
+        $filenames = [];
+        if ($this->zipFile) {
+            for($i = 0; $i < $this->zipFile->numFiles; $i++) {
+                $curFileName = $this->zipFile->getNameIndex($i);
+                if (strpos($curFileName, $searchString) != false) {
+                    $fileNames[] = $curFileName;
+                }
+            }
+        }
+
+        return $fileNames;
+    }
+                    
+        
 
     /**
      * Open a ZipArchive.

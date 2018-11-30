@@ -14,7 +14,7 @@ class AddFulltextIndexToSongDetailsTable extends Migration
     public function up()
     {
         Schema::table('song_details', function (Blueprint $table) {
-            DB::statement('CREATE FULLTEXT INDEX idx_fulltext_song_details ON song_details (song_name,song_sub_name,author_name)');
+            DB::statement('CREATE FULLTEXT INDEX idx_fulltext_song_details ON song_details (song_name,artist_name,author_name)');
         });
     }
 

@@ -10,16 +10,12 @@
         @slot('uploader', $song['uploader'])
         @slot('authorName', $song['version'][$song['key']]['authorName'])
         @slot('songName', $song['version'][$song['key']]['songName'])
-        @slot('songSubName', $song['version'][$song['key']]['songSubName'])
-        @slot('difficulties')
-            @foreach($song['version'][$song['key']]['difficulties'] as $diff => $data)
-                {{ $diff }}@if(!$loop->last), @endif
-                @php
-                    $events = $data['stats']['events'] ? 'Yes':'No'
-                @endphp
+        @slot('artistName', $song['version'][$song['key']]['artistName'])
+        @slot('beatmaps')
+            @foreach($song['version'][$song['key']]['beatmaps'] as $beatmap => $data)
+                {{ $beatmap }}@if(!$loop->last), @endif
             @endforeach
         @endslot
-        @slot('events', $events)
         @slot('downloadCount', $song['version'][$song['key']]['downloadCount'])
         @slot('playedCount', $song['version'][$song['key']]['playedCount'])
         @slot('upVotes', $song['version'][$song['key']]['upVotes'])

@@ -3,11 +3,10 @@
 
 @section('og-meta')
     @component('components.og-meta')
-        @slot('ogTitle', $song['version'][$song['key']]['songName'] .' '. $song['version'][$song['key']]['songSubName'])
+        @slot('ogTitle', $song['version'][$song['key']]['songName'] .' '. $song['version'][$song['key']]['artistName'])
         @slot('ogImageUrl', $song['version'][$song['key']]['coverUrl'])
         @slot('ogDescription')
-Difficulties: {{implode(', ',array_keys($song['version'][$song['key']]['difficulties'])) }}
-BPM: {{$song['version'][$song['key']]['bpm']}}
+Beatmaps: {{implode(', ',array_keys($song['version'][$song['key']]['beatmaps'])) }}
 Description: {{$song['description']}}
         @endslot
         @slot('ogUrl', $song['version'][$song['key']]['linkUrl'])

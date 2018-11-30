@@ -19,22 +19,19 @@
                 </tr>
 
                 <tr>
-                    <td>Song: {{ $songName }} - {{ $songSubName }}</td>
+                    <td>Song: {{ $songName }} - {{ $artistName }}</td>
                     <td class="has-text-right">Version: {{$version}}</td>
                 </tr>
 
                 <tr>
                     <td>Author: {{ $authorName }}</td>
-                    <td>Difficulties: {{ $difficulties }}</td>
+                    <td>Beatmaps: {{ $beatmaps }}</td>
                 </tr>
 
                 <tr>
                     <td>
                         Downloads: {{ $downloadCount }} || Finished: {{ $playedCount }} || <i class="fas fa-thumbs-up"></i> {{ $upVotes }} / <i
                             class="fas fa-thumbs-down"></i> {{ $downVotes }} || Rating: {{ $rating }}%
-                    </td>
-                    <td>
-                        Lighting Events: {{ $events }}
                     </td>
                 </tr>
 

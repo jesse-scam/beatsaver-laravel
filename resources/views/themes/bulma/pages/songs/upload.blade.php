@@ -37,11 +37,6 @@
                         </label>
                     </div>
                 </div>
-                <label class="label" style="margin: 10px 0; display: inline;">Game</label>
-                <select id="GameType" name="gameType">
-                    <option value="beatsaber">Beat Saber</option>
-                    <option value="chopit">Chop It</option>
-                </select>
 
                 <script>
                     var inp = document.getElementById('InputFile')
@@ -61,7 +56,7 @@
                         and any other content that isn't your own creation.
                     </li>
                     <li>Do not plagiarise or attempt to steal the work of others. Do not also upload or use other people's work without their explicit permission
-                        (including, but not limited to, skins and guest difficulties).
+                        (including, but not limited to, skins and guest beatmaps).
                     </li>
                 </ul>
 

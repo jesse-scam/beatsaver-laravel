@@ -17,12 +17,11 @@ class CreateSongsDetailsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('song_id');
             $table->string('song_name');
-            $table->string('song_sub_name')->default('');
+            $table->string('artist_name');
             $table->string('author_name');
             $table->unsignedInteger('play_count')->default(0);
             $table->unsignedInteger('download_count')->default(0);
-            $table->unsignedInteger('bpm')->default(0);
-            $table->json('difficulty_levels');
+            $table->json('beatmaps');
             $table->string('hash_md5');
             $table->string('hash_sha1');
             $table->softDeletes();
