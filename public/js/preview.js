@@ -1,12 +1,11 @@
 /**
  * @typedef {Object} SongInfo
  * @property {string} songName
- * @property {string} songSubName
+ * @property {string} artistName
  * @property {string} authorName
  * @property {number} beatsPerMinute
  * @property {number} previewStartTime
  * @property {number} previewDuration
- * @property {{ difficulty: string, difficultyRank: number, audioPath: string, jsonPath: string }[]} difficultyLevels
  */
 
 class PreviewPlayer {
@@ -54,7 +53,7 @@ class PreviewPlayer {
   static _getSongInfo (zipReader) {
     return new Promise((resolve, reject) => {
       zipReader.getEntries(entries => {
-        const infoJSON = entries.find(x => x.filename.includes('info.json'))
+        const infoJSON = entries.find(x => x.filename.includes('SongInfo.json'))
 
         infoJSON.getData(new zip.TextWriter(), text => {
           const json = JSON.parse(text)
@@ -66,13 +65,13 @@ class PreviewPlayer {
 
   /**
    * @param {zipReader} zipReader Zip Reader
-   * @param {string} audioPath Audio Path
+   * @param {string} audioExtension Audio Path
    * @returns {Promise.<Blob>}
    */
-  static _getSongBlob (zipReader, audioPath) {
+  static _getSongBlob (zipReader, audioExtension) {
     return new Promise((resolve, reject) => {
       zipReader.getEntries(entries => {
-        const song = entries.find(x => x.filename.includes(audioPath))
+        const song = entries.find(x => x.filename.includes(audioExtension))
 
         song.getData(
           new zip.BlobWriter(),
@@ -103,9 +102,9 @@ class PreviewPlayer {
     const zipReader = await PreviewPlayer._createReader(blob)
 
     const info = await PreviewPlayer._getSongInfo(zipReader)
-    const audioPath = info.difficultyLevels[0].audioPath
+    const audioExtension = '.ogg';
 
-    const songBlob = await PreviewPlayer._getSongBlob(zipReader, audioPath)
+    const songBlob = await PreviewPlayer._getSongBlob(zipReader, audioExtension)
     const song = URL.createObjectURL(songBlob)
 
     this.blobStore.set(key, { song, info })

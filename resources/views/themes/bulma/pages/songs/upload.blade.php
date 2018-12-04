@@ -49,22 +49,24 @@
 
                 <h5 class="has-text-grey">Must meet the following upload rules</h5>
                 <ul>
-                    <li>Must be a ZIP file with the songs subfolder in the root (EG: SongName/info.json)</li>
                     <li>Must be under 15MB</li>
-                    <li>Must contain valid metadata <strong>(UTF-8 encoded)</strong> and album art</li>
+                    <li>Must be a ZIP file with the songs subfolder in the root (EG: SongName/SongInfo.json)</li>
+                    <li>Must contain valid metadata <strong>(UTF-8 encoded)</strong> in SongInfo.json</li>
+                    <li>Must contain an ".ogg" audio file</li>
+                    <li>Must contain at least one beatmap file.  Beatmap files should have "beatmap" in the file name and the extension must be ".json" or ".txt" (EG: SongName/song_beatmap_hard.json)
+                    <li>Optionally include album art with a file named "cover.jpg" or "cover.png"</li>
                     <li>Make sure you have permission to use any content involved in your beatmap. This includes songs, videos, hit sounds, graphics,
-                        and any other content that isn't your own creation.
+                        and any other content that isn't your own creation
                     </li>
                     <li>Do not plagiarise or attempt to steal the work of others. Do not also upload or use other people's work without their explicit permission
-                        (including, but not limited to, skins and guest beatmaps).
+                        (including, but not limited to, skins and guest beatmaps)
                     </li>
                 </ul>
 
                 <h5 class="has-text-grey">Useful tips for avoiding problems</h5>
                 <ul>
-                    <li>Avoid using UNICODE charters in folder or file names. BeatSaber has no support for them.</li>
-                    <li>Remove unnecessary content from the zip file (like autosaves folder from the 3D editor).</li>
-                    <li>Check out these <a href="https://bsaber.com/benny-custom-mapping/" target="_blank" rel="noopener noreferrer">fantastic tutorials by BennyDaBeast</a> on how to make a great beat map.</li>
+                    <li>Avoid using UNICODE characters in folder or file names</li>
+                    <li>Remove unnecessary content from the zip file. (Anything that isn't SongInfo.json, beatmap files, an audio file, or a cover image)</li>
                 </ul>
 
                 <div class="field">

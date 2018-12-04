@@ -55,7 +55,7 @@ class SongController extends Controller
      */
     public function show(Song $song)
     {
-        $song->details->first()->difficulty_levels = json_decode($song->details->first()->difficulty_levels);
+        $song->details->first()->beatmaps = json_decode($song->details->first()->beatmaps);
 
         return view('admin.song.show', ['song' => $song]);
     }

@@ -95,7 +95,8 @@ class UploadParser
             // XXX: What to do for author name?
             $songData['authorName'] = 'test';
 
-            $songData['beatmaps'] = $this->findFilenamesInZip('beatmap');
+            $songData['beatmaps'] = [];
+            $beatmaps = $this->findFilenamesInZip('beatmap');
 
             $cover = $this->readFromZip($info['coverImagePath']);
             list($width, $height, $type, $attr) = getimagesizefromstring($cover);
@@ -129,8 +130,12 @@ class UploadParser
             }
 
             $hashBase = '';
-            foreach ($songData['beatmaps'] as $beatmap) {
+            foreach ($beatmaps as $beatmap) {
+                // Hash based on contents of maps
                 $hashBase .= $this->zipFile->getFromName($beatmap);
+
+                // Add filename without path for display
+                $songData['beatmaps'][] = array_slice(explode('/',  $beatmap), -1)[0];
             }
 
             if ($this->zipHasFile('cover.png')) {
@@ -155,40 +160,6 @@ class UploadParser
         }
 
         return $songData;
-    }
-
-    /**
-     * @param string $difficultyData
-     *
-     * @return array
-     */
-    protected function analyzeDifficulty(string $difficultyData): array
-    {
-        $difficultyStats = [
-            'time'      => 0,
-            'slashstat' => 0,
-            'events'    => 0,
-            'notes'     => 0,
-            'obstacles' => 0,
-        ];
-
-        $difficultyData = json_decode($difficultyData, true) ?: [];
-        if ($difficultyData) {
-            $noteTime = [];
-            $noteType = [];
-            foreach ($difficultyData['_notes'] as $data) {
-                $noteTime[] = $data['_time'];
-                @$noteType[$data['_cutDirection']]++; // suppress invalid index on first insert
-            }
-
-            $difficultyStats['time'] = $noteTime ? max($noteTime) : 0;
-            $difficultyStats['slashstat'] = $noteType;
-            $difficultyStats['events'] = count($difficultyData['_events'] ?? []);
-            $difficultyStats['notes'] = count($difficultyData['_notes'] ?? []);
-            $difficultyStats['obstacles'] = count($difficultyData['_obstacles'] ?? []);
-        }
-
-        return $difficultyStats;
     }
 
     /**
@@ -267,8 +238,6 @@ class UploadParser
 
         return $fileNames;
     }
-                    
-        
 
     /**
      * Open a ZipArchive.

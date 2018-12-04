@@ -55,20 +55,18 @@
                         <dl class="dl-horizontal">
                             <dt>Name:</dt>
                             <dd>{{ $song->details->first()->song_name }}</dd>
-                            <dt>Song sub name:</dt>
-                            <dd>{{ $song->details->first()->song_sub_name }}</dd>
+                            <dt>Artist Name:</dt>
+                            <dd>{{ $song->details->first()->artist_name }}</dd>
                             <dt>Author:</dt>
                             <dd>{{ $song->details->first()->author_name }}</dd>
                             <dt>Plays:</dt>
                             <dd>{{ $song->details->first()->play_count }}</dd>
                             <dt>Downloads:</dt>
                             <dd>{{ $song->details->first()->download_count }}</dd>
-                            <dt>BPM:</dt>
-                            <dd>{{ $song->details->first()->bpm }}</dd>
-                            <dt>Difficulties:</dt>
+                            <dt>Beatmaps:</dt>
                             <dd>
-                                @foreach($song->details->first()->difficulty_levels as $difficulty => $details)
-                                    {{ $difficulty }} <br>
+                                @foreach($song->details->first()->beatmaps as $beatmap)
+                                    {{ $beatmap }} <br>
                                 @endforeach
                             </dd>
                             <dt>Upvotes:</dt>

@@ -8,9 +8,9 @@
     @slot('songName', $song['version'][$song['key']]['songName'])
     @slot('artistName', $song['version'][$song['key']]['artistName'])
     @slot('beatmaps')
-        @foreach($song['version'][$song['key']]['beatmaps'] as $beatmap => $data)
-            {{ $beatmap }}@if(!$loop->last), @endif
-        @endforeach
+    @foreach($song['version'][$song['key']]['beatmaps'] as $beatmap)
+        {{ $beatmap }}@if(!$loop->last), @endif
+    @endforeach
     @endslot
     @slot('downloadCount', $song['version'][$song['key']]['downloadCount'])
     @slot('playedCount', $song['version'][$song['key']]['playedCount'])
