@@ -9,7 +9,7 @@
     @slot('artistName', $song['version'][$song['key']]['artistName'])
     @slot('description', $song['description'])
     @slot('beatmaps')
-        @foreach($song['version'][$song['key']]['beatmaps'] as $beatmap => $data)
+        @foreach($song['version'][$song['key']]['beatmaps'] as $beatmap)
             {{ $beatmap }}@if(!$loop->last), @endif
         @endforeach
     @endslot

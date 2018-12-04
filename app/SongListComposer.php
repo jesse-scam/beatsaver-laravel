@@ -282,7 +282,7 @@ class SongListComposer implements ListComposerContract
             ],
             'song'   => [
                 'type'   => 'fulltext',
-                'fields' => ['sd.song_name', 'sd.song_sub_name', 'sd.author_name'],
+                'fields' => ['sd.song_name', 'sd.artist_name', 'sd.author_name'],
             ],
             'all'    => [
                 'type'   => 'mixed',

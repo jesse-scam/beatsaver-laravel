@@ -136,7 +136,7 @@ class SongComposer implements ComposerContract
             'artist_name'       => $songData['artistName'],
             'author_name'       => $songData['authorName'],
             'cover'             => $songData['coverType'],
-            'beatmaps' => json_encode($songData['beatmaps']),
+            'beatmaps'          => json_encode($songData['beatmaps']),
             'hash_md5'          => $songData['hashMD5'],
             'hash_sha1'         => $songData['hashSHA1'],
         ]);
@@ -371,12 +371,13 @@ class SongComposer implements ComposerContract
             'createdAt'   => $song->created_at,
         ];
 
+
         foreach ($song->details as $detail) {
             $songData['version'][$song->id . '-' . $detail->id] = [
                 'songName'       => $detail->song_name,
                 'artistName'     => $detail->artist_name,
                 'authorName'     => $detail->author_name,
-                'beatmaps'       => json_decode($detail->beatmaps, true) ?? [],
+                'beatmaps'       => json_decode($detail->beatmaps),
                 'downloadCount'  => $detail->download_count,
                 'playedCount'    => $detail->play_count,
                 'upVotes'        => $detail->upVotes,
